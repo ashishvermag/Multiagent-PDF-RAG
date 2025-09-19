@@ -46,3 +46,104 @@ Follow these steps to get the application running on your local machine.
 ```bash
 git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
 cd your-repo-name
+
+
+2. Create a Virtual Environment
+It's highly recommended to use a virtual environment to manage dependencies.
+
+On macOS / Linux:
+
+Bash
+
+python3 -m venv venv
+source venv/bin/activate
+On Windows:
+
+Bash
+
+python -m venv venv
+.\venv\Scripts\activate
+3. Install Dependencies
+Create a file named requirements.txt and paste the following content into it:
+
+Plaintext
+
+streamlit
+python-dotenv
+chromadb
+sentence-transformers
+google-generativeai
+PyMuPDF
+langchain
+Now, install all the required packages:
+
+Bash
+
+pip install -r requirements.txt
+4. Set Up Environment Variables
+You'll need a Google Gemini API key for the application to work.
+
+Create a file named .env in the root of the project directory.
+
+Add your API key to this file:
+
+GOOGLE_API_KEY="YOUR_API_KEY_HERE"
+5. Run the Application
+Once the setup is complete, run the following command in your terminal:
+
+Bash
+
+streamlit run app.py
+Your browser should automatically open to the application's URL (usually http://localhost:8501).
+```
+
+⚙️ How It Works (Architecture)
+The application follows a Retrieval-Augmented Generation (RAG) architecture.
+
+Ingestion:
+
+A user uploads a PDF file.
+
+The text is extracted from each page.
+
+The extracted text is split into smaller, manageable chunks.
+
+An embedding model converts each chunk into a numerical vector.
+
+These vectors and their corresponding text are stored in a persistent ChromaDB collection, effectively creating a "brain" for the new agent.
+
+Retrieval and Generation:
+
+A user asks a question to an active agent.
+
+The question is converted into a vector using the same embedding model.
+
+A similarity search is performed in the agent's ChromaDB collection to find the most relevant text chunks (the "context").
+
+The original question and the retrieved context are inserted into a prompt template.
+
+This final prompt is sent to the Google Gemini LLM.
+
+The LLM generates a response based only on the provided context, which is then displayed to the user along with the source chunks.
+
+📁 Project Structure
+.
+├── multi_agent_chroma_db/    # Directory for persistent ChromaDB vectorstores
+├── .env                      # Stores API keys (add to .gitignore)
+├── app.py                    # Main Streamlit application file
+├── chat_history.json         # Saved conversation histories
+├── README.md                 # You are here!
+└── requirements.txt          # Python dependencies
+🔮 Future Improvements
+This project has a solid foundation that can be extended with more advanced features:
+
+Evaluation Dashboard: Integrate a RAG evaluation framework like RAGAs or TruLens to quantitatively measure the performance (faithfulness, answer relevancy) of the agents.
+
+Containerization: Package the application with Docker and Docker Compose for easy, reproducible deployment.
+
+Advanced Retrieval: Implement hybrid search (combining keyword and semantic search) and a re-ranker model to improve the quality of retrieved context.
+
+User Authentication: Add a login system so different users can manage their own private set of agents.
+
+Asynchronous Processing: Use a task queue like Celery to process large PDF uploads in the background without freezing the UI.
+
